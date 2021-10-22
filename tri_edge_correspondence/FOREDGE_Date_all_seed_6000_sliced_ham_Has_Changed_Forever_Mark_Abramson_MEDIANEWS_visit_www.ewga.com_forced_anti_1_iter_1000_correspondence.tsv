@@ -1,7 +1,0 @@
-B_dom	B_cod	A_dom	A_cod	count	probability
-Mark_Abramson_MEDIANEWS	visit_www.ewga.com	Mark_Abramson_MEDIANEWS	visit_www.ewga.com	1000	1.0
-Mark_Abramson_MEDIANEWS	visit_www.ewga.com	NA	NA	0	0.0
-Has_Changed_Forever	visit_www.ewga.com	sliced_ham	visit_www.ewga.com	1000	1.0
-Has_Changed_Forever	visit_www.ewga.com	NA	NA	0	0.0
-Has_Changed_Forever	Mark_Abramson_MEDIANEWS	sliced_ham	Mark_Abramson_MEDIANEWS	1000	1.0
-Has_Changed_Forever	Mark_Abramson_MEDIANEWS	NA	NA	0	0.0
