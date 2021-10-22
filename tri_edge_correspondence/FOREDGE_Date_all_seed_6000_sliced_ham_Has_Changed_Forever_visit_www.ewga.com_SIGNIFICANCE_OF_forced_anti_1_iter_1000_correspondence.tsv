@@ -1,0 +1,10 @@
+B_dom	B_cod	A_dom	A_cod	count	probability
+Has_Changed_Forever	SIGNIFICANCE_OF	sliced_ham	SIGNIFICANCE_OF	637	0.637
+Has_Changed_Forever	SIGNIFICANCE_OF	sliced_ham	visit_www.ewga.com	363	0.363
+Has_Changed_Forever	SIGNIFICANCE_OF	NA	NA	0	0.0
+Has_Changed_Forever	visit_www.ewga.com	sliced_ham	visit_www.ewga.com	637	0.637
+Has_Changed_Forever	visit_www.ewga.com	sliced_ham	SIGNIFICANCE_OF	363	0.363
+Has_Changed_Forever	visit_www.ewga.com	NA	NA	0	0.0
+visit_www.ewga.com	SIGNIFICANCE_OF	visit_www.ewga.com	SIGNIFICANCE_OF	637	0.637
+visit_www.ewga.com	SIGNIFICANCE_OF	SIGNIFICANCE_OF	visit_www.ewga.com	363	0.363
+visit_www.ewga.com	SIGNIFICANCE_OF	NA	NA	0	0.0

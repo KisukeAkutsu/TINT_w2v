@@ -6,16 +6,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from scipy.stats import pearsonr,spearmanr
+from my_function import *
 
 plt.rcParams["font.family"] = "IPAexGothic"
 
 def load_corr_data(fname,target,source):
-    DIR = "./../three_metaphor_data/"
     Corr_DIR = "./../GraduationThesis/edge_correspondence/"
 
     #全てのイメージのデータを取得する
-    node_data = pd.read_csv(DIR+"three_metaphor_images.csv",header=None,encoding="shift-jis")
-    df_edge_corr = pd.read_csv(Corr_DIR+fname,header=0,encoding="utf-8")
+    node_data = get_node_data()
+    df_edge_corr = pd.read_csv(Corr_DIR+fname,header=0,encoding="utf-8", sep="\t")
 
     df_edge_corr = df_edge_corr.fillna("NA")
     A_node_data = list(node_data[node_data[0]==target][1])
@@ -40,102 +40,6 @@ def load_corr_data(fname,target,source):
     df = pd.DataFrame(matrix,index=B_node_data,columns=A_node_data+["NA"])
     return df
 
-def data_preprocessing(dir = "./"):
-    data = pd.read_csv(dir+"2020_05_08_TINT_corr_data.csv", header=0)
-    CW_id_data = pd.read_csv(dir+"cloudworks_id.csv",skiprows=1,names=("userID","name","url","date","expID"))
-    # 質問のidを変更する辞書
-    user_name_dict  = {
-        "StartDate" : "S_date",
-        "EndDate"   : "E_date",
-        "Status"    : "Status",
-        "Finished"  : "Finished",
-        "Duration (in seconds)" : "time",
-        "Q6"   : "sex",
-        "Q7_1" : "age",
-        "Q8"   : "ja",
-        "Q193_Operating System" : "userOS",
-        "random"    : "random"
-    }
-    user_data_names = ["S_date","E_date","Status","Finished","time","sex","age","ja","userOS"]
-
-    # 基本的な質問をIDから変換
-
-    # 練習問題 IMC
-    front_IMC_name_dict = {
-        "Q171" : ("敵","議論相手"),
-        "Q172" : ("陣地","主張"),
-        "Q173" : ("陣地を攻める","相手の主張を攻める"),
-        "Q174" : ("陣地を守る","自分の主張を守る"),
-        "Q194" : ("勝利","論破")
-    }
-    front_IMC_names = [("敵","議論相手"),("陣地","主張"),("陣地を攻める","相手の主張を攻める"),("陣地を守る","自分の主張を守る"),("勝利","論破")]
-
-    main_corr_name_dict = {}
-    # 質問のIDから対応するタプルに変化できる辞書を作る
-    corr_data_names = []
-    T_images = ["舞う" , "飛ぶ" , "花" , "女性" , "空" , "美しさ" , "儚さ" , "羽" , "NA"]
-    S_images = ["踊り" , "女性" , "スカート" , "夜" , "音楽" , "回る" , "揺れる" , "舞台"]
-    q_ranges = [142,209,220,231,242,253,264,275]
-    for S_image,r in zip(S_images,q_ranges):
-        for i, T_image in enumerate(T_images):
-            id_int = r+i
-            q_id = "Q"+str(id_int)
-            main_corr_name_dict[q_id] = (S_image,T_image)
-            corr_data_names.append((S_image,T_image))
-
-    # IMC
-    back_IMC_name_dict = {
-        "Q287" : ("登山道","研究方針"),
-        "Q288" : ("登山準備","勉強"),
-        "Q289" : ("登頂","研究の成功"),
-        "Q290" : ("遭難","研究の失敗"),
-    }
-    back_IMC_names = [("登山道","研究方針"),("登山準備","勉強"),("登頂","研究の成功"),("遭難","研究の失敗")]
-
-    # データの列名を指定した列名へ変換
-    data = data.rename(columns=user_name_dict)
-    data = data.rename(columns=front_IMC_name_dict)
-    data = data.rename(columns=main_corr_name_dict)
-    data = data.rename(columns=back_IMC_name_dict)
-    
-    # データの時間を実験実施日のものだけ抽出
-    data = data[data["S_date"].str.match("2020-05-08")]
-
-    #CWで仕事を請け負った人からの回答に限定
-    data = data.astype({"random": "int64"})
-    data = data[data["random"].isin(CW_id_data["expID"])]
-    print("CWからアクセスした人：",len(data))
-    # 回答が終了している人に限定
-    data = data[data["Finished"]== "True"]
-    print("実験が終了している人：",len(data))
-
-    # かかった時間の上位10%を切る
-    data = data.astype({"time": "int"})
-    data = data.sort_values("time",ascending=False)
-    print("かかった上位下位１０％を切る")
-    print("元のデータ数：",len(data))
-    print(data.head(5)["time"])
-    print(data.tail(5)["time"])
-    data = data[5:]
-    print("上位10%(5人)を切る：",len(data))
-
-    data = data[:-5]
-    print("下位10%(5人)を切る：",len(data))
-    # 最後のIMCに正しく回答できているデータだけを抽出
-    print("最後のIMCに正しくどちらとも言えないと回答しているデータのみを収集")
-    for back_IMC_name in back_IMC_names:
-        data = data[data[back_IMC_name]=="どちらとも言えない"]
-        print(back_IMC_name, len(data))
-
-    # 必要なデータだけを抽出したデータから名前を変換した（必要な）列だけ抽出（いまはユーザの情報と回答データだけしかとってないクリックとかは別で集計予定）
-    data = data[
-        list(user_name_dict.values())+
-        list(front_IMC_name_dict.values())+
-        list(main_corr_name_dict.values())+
-        list(back_IMC_name_dict.values())
-    ]
-    print("必要な列だけ取り出す：",len(data.columns))
-    return data, user_name_dict, front_IMC_name_dict, main_corr_name_dict,back_IMC_name_dict
 
 def make_human_corr_heatmap(data,user_dict,front_dict,main_dict,back_dict):
     # 正しく回答できているデータを分割する(User,前半IMC,メインの対応,後半IMC)

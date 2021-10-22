@@ -1,3 +1,4 @@
+import csv
 # TINTの対応づけの記録用クラス-基本的に継承しているものはシミュレーション毎に記録用ファイル名の命名規則などを変更している
 
 class TINT_recoder(object):
@@ -51,9 +52,10 @@ class TINT_recoder(object):
         #(B.?->B.?) => (A.?,A.?)の形式になっているのでBのノードを順次回せばできるのでは
         dict = self.sim_pair_dicts[(target_A,target_B,num_anti*self.anti_time)]
         fname = create_recode_file_name(target_A,target_B,num_anti)
-        with open(fname,'w') as f:
+        with open(fname,'w', newline="\n") as f:
             apper_keys = set()
-            f.write("B_dom,B_cod,A_dom,A_cod,count,probability\n")
+            tsv_writer = csv.writer(f, delimiter="\t")
+            tsv_writer.writerow(["B_dom","B_cod","A_dom","A_cod","count","probability"])
             for key in dict.keys():
                 sum_count=0
                 if remove_identity:
@@ -68,10 +70,10 @@ class TINT_recoder(object):
                     A_dom,A_cod = A_edge
                     count = dict[k]
                     sum_count+=count
-                    f.write("{0},{1},{2},{3},{4},{5}\n".format(B_dom,B_cod,A_dom,A_cod,count,count/self.sim_iter))
+                    tsv_writer.writerow([B_dom,B_cod,A_dom,A_cod,count,count/self.sim_iter])
                 apper_keys |= set(keys)
                 if is_na_count and keys != []:
-                    f.write("{0},{1},{2},{3},{4},{5}\n".format(B_dom,B_cod,"NA","NA",(self.sim_iter-sum_count),(self.sim_iter-sum_count)/self.sim_iter))
+                    tsv_writer.writerow([B_dom,B_cod,"NA","NA",self.sim_iter-sum_count,(self.sim_iter-sum_count)/self.sim_iter])
 
     def all_dict_to_csv(self,remove_identity=False,is_na_count=True):
         for key in self.keys:
@@ -79,8 +81,9 @@ class TINT_recoder(object):
             target_A,target_B,num_anti = key
             fname = self.create_recode_file_name(target_A,target_B,num_anti)
             with open(fname,'w') as f:
+                tsv_writer = csv.writer(f, delimiter="\t")
                 apper_keys = set()
-                f.write("B_dom,B_cod,A_dom,A_cod,count,probability\n")
+                tsv_writer.writerow(["B_dom","B_cod","A_dom","A_cod","count","probability"])
                 for key in dict.keys():
                     sum_count=0
                     if remove_identity:
@@ -95,13 +98,13 @@ class TINT_recoder(object):
                         A_dom,A_cod = A_edge
                         count = dict[k]
                         sum_count+=count
-                        f.write("{0},{1},{2},{3},{4},{5}\n".format(B_dom,B_cod,A_dom,A_cod,count,count/self.sim_iter))
+                        tsv_writer.writerow([B_dom, B_cod, A_dom, A_cod, count, count/self.sim_iter])    
                     apper_keys |= set(keys)
                     if is_na_count and keys != []:
-                        f.write("{0},{1},{2},{3},{4},{5}\n".format(B_dom,B_cod,"NA","NA",(self.sim_iter-sum_count),(self.sim_iter-sum_count)/self.sim_iter))
+                        tsv_writer.writerow([B_dom,B_cod,"NA","NA",self.sim_iter-sum_count, (self.sim_iter-sum_count)/self.sim_iter])
 
     def create_recode_file_name(self, target_A, target_B, num_anti):
-        return self.D_PATH+"seed_" + str(self.seed)+"_"+ target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.csv"
+        return self.D_PATH+"seed_" + str(self.seed)+"_"+ target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.tsv"
 
     # 対応づいた連想を記録する関数
     def recode_functor_F(self,A,B,anti_time,F_edge_dict):
@@ -136,7 +139,7 @@ class Three_metaphor_TINT_recoder(TINT_recoder):
         self.img_name_dict = dict()
         self.img_name_cos_dict = dict()
     def create_recode_file_name(self, target_A, target_B, num_anti):
-        return self.D_PATH+self.data_header+"seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.csv"
+        return self.D_PATH+self.data_header+"seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.tsv"
 
 # 3つの比喩に対して三角構造同士のシミュレーションを1つの三角構造に対して行う際の、記録用クラス
 class Three_metaphor_TINT_recoder_for_edge(TINT_recoder):
@@ -147,7 +150,7 @@ class Three_metaphor_TINT_recoder_for_edge(TINT_recoder):
         self.img_name_dict = dict()
         self.img_name_cos_dict = dict()
     def create_recode_file_name(self, target_A, target_B, num_anti):
-        return self.D_PATH+self.data_header+"seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.csv"
+        return self.D_PATH+self.data_header+"seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.tsv"
 
 # 3つの比喩に対して三角構造同士のシミュレーションを全ての三角構造に対して行う際の、記録用クラス（三角構造の情報をファイル名につける）
 class Three_metaphor_TINT_recoder_for_edge_all(TINT_recoder):
@@ -161,7 +164,7 @@ class Three_metaphor_TINT_recoder_for_edge_all(TINT_recoder):
         self.B_dom = B_dom
         self.B_cod = B_cod
     def create_recode_file_name(self, target_A, target_B, num_anti):
-        return self.D_PATH+self.data_header+"seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.B_dom+"_"+self.B_cod+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.csv"
+        return self.D_PATH+self.data_header+"seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.B_dom+"_"+self.B_cod+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.tsv"
 
 
 class word2vec_TINT_recoder(TINT_recoder):
@@ -171,4 +174,4 @@ class word2vec_TINT_recoder(TINT_recoder):
         self.img_name_cos_dict = dict()
 
     def create_recode_file_name(self, target_A, target_B, num_anti):
-        return self.D_PATH+"word2vec_seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.csv"
+        return self.D_PATH+"word2vec_seed_"+str(self.seed)+"_"+target_A+"_"+target_B+"_"+self.anti_type+"_anti_"+str(num_anti)+"_iter_"+str(self.sim_iter)+"_correspondence.tsv"

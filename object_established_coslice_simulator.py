@@ -26,12 +26,13 @@ def show_metaphar(F_edge_dict,target_A,target_B):
 #得られた関手を解釈しやすいAにとってのCはBにとってのDという形でファイルに書き出す
 def save_metaphar(fname,F_edge_dict,target_A,target_B):
     with open(save_dir+fname,'w') as f:
+        tsv_writer = csv.reader(f, delimiter="\t")
         for base,target in F_edge_dict.items():
             b_dom,b_cod = base
             t_dom,t_cod = target
             if b_dom == b_cod and t_dom==t_cod:
                 continue
-            f.write("{0:<5} にとっての {1:<5}\t {2:<5} にとっての {3:<5}\n".format(b_dom,b_cod,t_dom,t_cod))
+            tsv_writer.writerows("{0:<5} にとっての {1:<5}\t {2:<5} にとっての {3:<5}\n".format(b_dom,b_cod,t_dom,t_cod))
 
 #喩辞と被喩辞の意味を表す圏の間での射の対応を探索する
 def categories_nt_search(g, T, S, est_T, est_S, cutoff):
@@ -59,7 +60,6 @@ def categories_nt_search(g, T, S, est_T, est_S, cutoff):
     nt_weight_mat = np.array([[g[s_node][t_node]["weight"] for t_node in T_succs] for s_node in S_succs])
     #重みと同じ形状のランダム値が入った配列を生成
     rnd_mat = np.random.rand(len(S_succs),len(T_succs))
-
     for i, (rnd_list, nt_weight_list) in enumerate(zip(rnd_mat, nt_weight_mat)):
         nt_cand_list = T_succs[rnd_list < nt_weight_list]                   #自然変換の候補の取得
         if nt_cand_list.size == 0:#候補が一つも励起されなかった場合飛ばす
@@ -213,17 +213,12 @@ def TINT_simu_est(g, A, B, est_A, est_B, config, recoder):
         show_graphs([est_A,est_B],["shell","shell"],True,False,["sim A\C result","sim B\C result"])
 
 #3つの比喩についてTINTのシミュレーションを実行する関数
-def established_three_metaphor_sim():
-    #連想データが置いてあるディレクトリ
-    DIR = "./../three_metaphor_data/"
+def established_three_metaphor_sim(w2v_seed, A, B):
 
     #全てのイメージのデータを取得する
-    node_data = pd.read_csv(DIR+"three_metaphor_images.csv",header=None,encoding="SHIFT-JIS")
+    node_data = get_node_data(w2v_seed)
 
-    A_targets = ["蝶"]         # 被喩辞
-    B_targets = ["踊り子"]       # 喩辞
-    A_fname = ["butterfly"]  # 被喩辞の英語
-    B_fname = ["dancer"] # 喩辞の英名
+    A_targets ,B_targets, A_fname, B_fname = get_A_B_targets(A,B)
 
 
     A_name_dict = {key:value for key,value in zip(A_targets,A_fname)} #喩辞のファイル名（記録用）
@@ -239,7 +234,7 @@ def established_three_metaphor_sim():
     data_index = "all"                  # 4人のデータを使ったので、記録する際にどのデータを使ったのかのヘッダー(0~3,all)
 
     # 連想強度データから潜在圏を作る
-    assoc_net = make_assoc_net("source","target")
+    assoc_net = make_assoc_net("source","target",w2v_seed)
 
     #シード値でのループ
     for seed_inc in trange(0,1,desc="SEED_LOOP",leave=False):
@@ -253,17 +248,20 @@ def established_three_metaphor_sim():
             config = Three_metaphor_TINT_config(sim_times,anti_time,anti_type,seed+seed_inc,A_nodes,nt_step,is_show,is_save,A_name_dict,B_name_dict,data_index)
 
             #コスライス圏Aの対象だけを確立させる（A->?）の射だけ
+            #ここでコサイン類似度でsortした中から上位8単語だけを抽出してコスライス圏を作る    
             est_A = nx.DiGraph()
-            A_node_data = node_data[node_data[0]==target_A]
+            A_node_data = sort_cossim_data(w2v_seed, target_A)
             for cod in A_node_data[1]:
+                #恒等射は抜く
                 if target_A == cod or not assoc_net.has_edge(target_A,cod):
                     continue
                 est_A.add_edge(target_A,cod)
+            #こっちで恒等射を作る
             identity_morphism(est_A)
 
             #コスライス圏Bの対象だけを確立させる(B->?)の射だけ
             est_B = nx.DiGraph()
-            B_node_data = node_data[node_data[0]==target_B]
+            B_node_data = sort_cossim_data(w2v_seed, target_B)
             for cod in B_node_data[1]:
                 if target_B == cod or not assoc_net.has_edge(target_B,cod):
                         continue
@@ -280,4 +278,6 @@ def established_three_metaphor_sim():
 
 
 if __name__ == "__main__":
-    established_three_metaphor_sim()
+    #w2v_seed:使用するGoogleNewsデータを選択(0~5)
+    w2v_seed, A, B = select_seed_and_f()
+    established_three_metaphor_sim(w2v_seed, A, B)

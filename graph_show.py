@@ -138,7 +138,7 @@ def get_layout(layout):
         func = None
     return func
 
-def show_graphs(glaphs, layouts, node_label=True,edge_label=True,titles=None):
+def show_graphs(glaphs, layouts, node_label=True, edge_label=True, titles=None):
     # print("show_graph")
     num_glaph = len(glaphs)
     fig = plt.figure(figsize=(16,8))

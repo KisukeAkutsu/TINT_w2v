@@ -13,8 +13,7 @@ def load_three_metaphor_data():
     return df
 """
 #w2vデータを連想確率として利用
-#w2v_cos_sim.csvはshift-jisで書かれてる
-def load_three_metaphor_data():
-    DIR = "./../word2vec_data/"
-    df = pd.read_csv(DIR+"w2v_cos_sim.csv",header=0,index_col=0, encoding='SHIFT-JIS')
+def load_three_metaphor_data(w2v_seed):
+    DIR = "./../seed_data/"
+    df = pd.read_csv(DIR+"GoogleNews_cossim_data_seed_{}.tsv".format(w2v_seed), sep ="\t")
     return df
