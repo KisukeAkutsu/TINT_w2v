@@ -17,13 +17,14 @@ from tqdm import tqdm,trange
 import sys
 import pprint
 
-def make_all_triangle_edge_correspondence_csv(target,source,seed,w2v_seed):
+#def make_all_triangle_edge_correspondence_csv(target,source,seed,w2v_seed):
+def make_all_triangle_edge_correspondence_csv(target,source,seed):   
     Corr_DIR = "./tri_edge_correspondence/"
+    node_data = get_node_data()
 
-    node_data = get_node_data(w2v_seed)
-    B_node_data = sort_cossim_data(w2v_seed, source)
-    B_node_data = remove_identity_image(B_node_data)
+    B_node_data = node_data[node_data[0]==source]
     B_init_nodes = list(B_node_data[1])
+    B_init_nodes.remove(source)
     B_remain_image = [[dom,cod] for dom,cod in iter.permutations(B_init_nodes, 2)]
     
     matrix = []
@@ -33,10 +34,10 @@ def make_all_triangle_edge_correspondence_csv(target,source,seed,w2v_seed):
         df_edge_corr = pd.read_csv(Corr_DIR+"FOREDGE_Date_all_seed_6000_{}_{}_{}_{}_forced_anti_1_iter_1000_correspondence.tsv".format(target,source,tri_dom,tri_cod),header=0,encoding="utf-8", sep="\t")
 
         df_edge_corr = df_edge_corr.fillna("NA")                    #列にNAを追加
+        A_node_data = list(node_data[node_data[0]==target][1])    #被喩辞のイメージをとる
         B_node_data = B_remain_tri                                  #被喩辞三角構造のイメージをとる
-#        A_node_data = make_node_data(target, node_data)
-        A_node_data = sort_cossim_data(w2v_seed, target)
-        A_node_data = A_node_data[1].tolist()
+        A_node_data.remove(target)    #被喩辞そのものを消す
+
 
         # 対象同士の対応づけについてカウントする
         edge_corr_dict = {(B_node,A_node):0 for A_node in A_node_data for B_node in B_node_data}
@@ -345,9 +346,11 @@ def TINT_simu_est(g, A, B, est_A, est_B, config, recoder):
 
 
 #3つの比喩についてTINTのシミュレーションを実行する関数
-def tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
+#def tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
+def tri_structure_established_three_metaphor_sim(A,B):
 
-    node_data = get_node_data(w2v_seed)
+#    node_data = get_node_data(w2v_seed)
+    node_data = get_node_data()
     A_targets, B_targets, A_fname, B_fname = get_A_B_targets(A,B)
 
     A_name_dict = {key:value for key,value in zip(A_targets,A_fname)} #喩辞のファイル名（記録用）
@@ -363,7 +366,8 @@ def tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
     data_index = "all"            
 
     # 連想強度データから潜在圏を作る
-    assoc_data = load_three_metaphor_data(w2v_seed)# データの読み込みindexは4人のうちどのデータを使うか(Noneは全員の平均)
+#    assoc_data = load_three_metaphor_data(w2v_seed)# データの読み込みindexは4人のうちどのデータを使うか(Noneは全員の平均)
+    assoc_data = load_three_metaphor_data()
     # pandas の dataframe を入力として nexworkX のグラフにする
     assoc_net = nx.from_pandas_edgelist(df = assoc_data, source='source', target='target',edge_attr=["weight"], create_using=nx.DiGraph)
     identity_morphism(assoc_net) # 恒等射の追加
@@ -382,8 +386,7 @@ def tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
 
                 #ターゲット側のコスライス圏の対象だけを確立させる（A->?）の射だけ
                 est_A = nx.DiGraph()
-#                A_node_data = node_data[node_data[0]==target_A]
-                A_node_data = sort_cossim_data(target_A)
+                A_node_data = node_data[node_data[0]==target_A]
 
                 # コスライス圏の対象を励起
                 for cod in A_node_data[1]:
@@ -400,8 +403,7 @@ def tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
 
                 #ソース側のコスライス圏で強い三角構造だけを励起させる
                 est_B = nx.DiGraph()
-#                B_node_data = node_data[node_data[0]==target_B]
-                B_node_data = sort_cossim_data(target_B)
+                B_node_data = node_data[node_data[0]==target_B]
                 # 三角構造の射それぞれの連想確率の平均をとって最大のものを励起させる
                 triangle_structure = []
                 for dom in B_node_data[1]:
@@ -429,10 +431,12 @@ def tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
 
 
 #3つの比喩について全ての考えうる三角構造についてTINTのシミュレーションを実行する関数
-def all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
+#def all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
+def all_tri_structure_established_three_metaphor_sim(A,B):
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data(w2v_seed)
+#    node_data = get_node_data(w2v_seed)
+    node_data = get_node_data()
     A_targets, B_targets, A_fname, B_fname = get_A_B_targets(A,B)
 
 
@@ -450,7 +454,8 @@ def all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
 
 
     # 連想強度データから潜在圏を作る
-    assoc_net = make_assoc_net("source", "target",w2v_seed)
+#    assoc_net = make_assoc_net("source", "target",w2v_seed)
+    assoc_net = make_assoc_net("source", "target")
     #シード値でのループ
     for seed_inc in trange(0,1,desc="SEED_LOOP",leave=False):
         # ランダムシードの設定(pythonのデフォルトrandom、numpy用ランダムシード)
@@ -459,7 +464,7 @@ def all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
 
         # 比喩についてのループ
         for target_A,target_B in zip(tqdm(A_targets,desc="HIYU LOOP",leave=False),B_targets):
-            B_node_data = sort_cossim_data(w2v_seed, target_B)
+            B_node_data = node_data[node_data[0]==target_B]
             #喩辞側の全ての三角構造についてシミュレーションを行う
             B_init_nodes = list(B_node_data[1])
             B_init_nodes.remove(target_B)
@@ -473,7 +478,7 @@ def all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
                 #ターゲット側のコスライス圏の作成
                 A_nodes = None      #neighboring ruleの制限をかけるためのもの
                 est_A = nx.DiGraph()
-                A_node_data = sort_cossim_data(w2v_seed, target_A)
+                A_node_data = node_data[node_data[0]==target_A]
                 # コスライス圏の対象を励起
                 for cod in A_node_data[1]:
                     if cod == target_A:
@@ -503,9 +508,11 @@ def all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B):
                     TINT_simu_est(assoc_net, target_A, target_B, est_A, est_B, config, recoder)
                 # recodeに記録されている関手Fをすべてファイルに吐き出す
                 recoder.all_dict_to_csv(True,True)
-            make_all_triangle_edge_correspondence_csv(target_A,target_B,seed+seed_inc, w2v_seed)
+            #make_all_triangle_edge_correspondence_csv(target_A,target_B,seed+seed_inc, w2v_seed)
+            make_all_triangle_edge_correspondence_csv(target_A,target_B,seed+seed_inc)
 
 if __name__ == "__main__":
     # tri_structure_established_three_metaphor_sim(w2v_seed,A,B)
-    w2v_seed, A, B = select_seed_and_f()  
-    all_tri_structure_established_three_metaphor_sim(w2v_seed,A,B)
+    A = "butterfly"
+    B = "dancer"
+    all_tri_structure_established_three_metaphor_sim(A,B)
