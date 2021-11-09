@@ -22,7 +22,7 @@ def make_all_triangle_edge_correspondence_csv(target,source,seed):
     Corr_DIR = "./tri_edge_correspondence/"
     node_data = get_node_data()
 
-    B_node_data = node_data[node_data[0]==source]
+    B_node_data = sort_cossim_data(source)
     B_init_nodes = list(B_node_data[1])
     B_init_nodes.remove(source)
     B_remain_image = [[dom,cod] for dom,cod in iter.permutations(B_init_nodes, 2)]
@@ -34,8 +34,9 @@ def make_all_triangle_edge_correspondence_csv(target,source,seed):
         df_edge_corr = pd.read_csv(Corr_DIR+"FOREDGE_Date_all_seed_6000_{}_{}_{}_{}_forced_anti_1_iter_1000_correspondence.tsv".format(target,source,tri_dom,tri_cod),header=0,encoding="utf-8", sep="\t")
 
         df_edge_corr = df_edge_corr.fillna("NA")                    #列にNAを追加
-        A_node_data = list(node_data[node_data[0]==target][1])    #被喩辞のイメージをとる
+        A_node_data = sort_cossim_data(target)
         B_node_data = B_remain_tri                                  #被喩辞三角構造のイメージをとる
+        A_node_data = A_node_data[1].tolist()
         A_node_data.remove(target)    #被喩辞そのものを消す
 
 
@@ -386,7 +387,7 @@ def tri_structure_established_three_metaphor_sim(A,B):
 
                 #ターゲット側のコスライス圏の対象だけを確立させる（A->?）の射だけ
                 est_A = nx.DiGraph()
-                A_node_data = node_data[node_data[0]==target_A]
+                A_node_data = sort_cossim_data(target_A)
 
                 # コスライス圏の対象を励起
                 for cod in A_node_data[1]:
@@ -403,7 +404,7 @@ def tri_structure_established_three_metaphor_sim(A,B):
 
                 #ソース側のコスライス圏で強い三角構造だけを励起させる
                 est_B = nx.DiGraph()
-                B_node_data = node_data[node_data[0]==target_B]
+                B_node_data = sort_cossim_data(target_B)
                 # 三角構造の射それぞれの連想確率の平均をとって最大のものを励起させる
                 triangle_structure = []
                 for dom in B_node_data[1]:
@@ -464,7 +465,7 @@ def all_tri_structure_established_three_metaphor_sim(A,B):
 
         # 比喩についてのループ
         for target_A,target_B in zip(tqdm(A_targets,desc="HIYU LOOP",leave=False),B_targets):
-            B_node_data = node_data[node_data[0]==target_B]
+            B_node_data = sort_cossim_data(target_B)
             #喩辞側の全ての三角構造についてシミュレーションを行う
             B_init_nodes = list(B_node_data[1])
             B_init_nodes.remove(target_B)
@@ -478,7 +479,7 @@ def all_tri_structure_established_three_metaphor_sim(A,B):
                 #ターゲット側のコスライス圏の作成
                 A_nodes = None      #neighboring ruleの制限をかけるためのもの
                 est_A = nx.DiGraph()
-                A_node_data = node_data[node_data[0]==target_A]
+                A_node_data = sort_cossim_data(target_A)
                 # コスライス圏の対象を励起
                 for cod in A_node_data[1]:
                     if cod == target_A:
@@ -513,6 +514,13 @@ def all_tri_structure_established_three_metaphor_sim(A,B):
 
 if __name__ == "__main__":
     # tri_structure_established_three_metaphor_sim(w2v_seed,A,B)
-    A = "butterfly"
-    B = "dancer"
-    all_tri_structure_established_three_metaphor_sim(A,B)
+    adj_matrix("facility","plow")
+    get_node_data
+    node_data = get_node_data()
+    B_node_data = sort_cossim_data("plow")
+    B_init_data = B_node_data[1]
+    B_init_data = B_init_data.tolist()
+    B_init_data.remove("plow")
+    for dom,cod in iter.permutations(B_init_data,2):
+        all_tri_TINT_edge_correspondence_heatmap("butterfly","dancer",dom,cod)
+

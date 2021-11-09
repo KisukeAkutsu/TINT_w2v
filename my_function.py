@@ -41,7 +41,7 @@ def make_count_matrix(A_node_data, B_node_data, df_edge_corr):
 #    node_data = pd.read_csv("./../seed_data/GoogleNews_image_data_seed_{}.tsv".format(w2v_seed),header=None,encoding="utf-8", sep="\t")
 #    return  node_data
 def get_node_data():
-    node_data = pd.read_csv("./../seed_data/similar_butterfly_dancer/butterfly_dancer_images.tsv",header=None,encoding="utf-8", sep="\t")
+    node_data = pd.read_csv("./../seed_data/noun_data/noun_image_data.tsv",header=None,encoding="utf-8", sep="\t")
     return  node_data
 
     
@@ -53,10 +53,11 @@ def get_A_B_targets(A,B):
     
     return A_targets, B_targets, A_fname, B_fname
     
-def select_seed_and_f():
+#def select_seed_and_f():
+def select_f():
     #seed値を選択
-    w2v_seed = input("select seed(0~5)")
-    df = pd.read_csv("./../seed_data/GoogleNews_w2v_data_seed_{}.tsv".format(w2v_seed), encoding="utf-8", sep="\t")
+#    w2v_seed = input("select seed(0~5)")
+    df = pd.read_csv("./../seed_data/noun_data/noun_data.tsv",encoding="utf-8",sep="\t")
 
     keys = df.columns.values
     f_data = []
@@ -72,7 +73,7 @@ def select_seed_and_f():
 
     #使用する射fを選択
     x = int(input("\n select_f (0~9) : "))
-    return w2v_seed, f_data[x][0], f_data[x][1]
+    return f_data[x][0], f_data[x][1]
     
 def make_node_data(center, node_data):
     center_node_data = list(node_data[node_data[0] == center][1])

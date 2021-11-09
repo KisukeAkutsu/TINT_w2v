@@ -15,5 +15,5 @@ def load_three_metaphor_data():
 def load_three_metaphor_data():
     DIR = "./../seed_data/"
     #df = pd.read_csv(DIR+"GoogleNews_cossim_data_seed_{}.tsv".format(w2v_seed), sep ="\t")
-    df = pd.read_csv(DIR+"./similar_butterfly_dancer/butterfly_dancer_cossim_data.tsv",sep="\t")
+    df = pd.read_csv(DIR+"./noun_data/noun_cossim_data.tsv",sep="\t")
     return df

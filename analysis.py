@@ -2,6 +2,7 @@ from data_load import *
 from common import identity_morphism
 from graph_show import *
 from my_function import *
+from tri_established_coslice_simulator import *
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -21,8 +22,12 @@ def adj_matrix(target,source):
     assoc_net = make_assoc_net(source = "source", target = "target")
 
 
-    A_node_data = list(node_data[node_data[0]==target][1])
-    B_node_data = list(node_data[node_data[0]==source][1])
+    A_node_data = sort_cossim_data(target)
+    B_node_data = sort_cossim_data(source)
+    A_node_data = A_node_data[1]
+    B_node_data = B_node_data[1]
+    A_node_data = A_node_data.tolist()
+    B_node_data = B_node_data.tolist()
     A_node_data.remove(target)
     B_node_data.remove(source)
 
@@ -105,9 +110,14 @@ def tri_TINT_edge_correspondence_heatmap(target,source, tri_dom, tri_cod):
 
     df_edge_corr = df_edge_corr.fillna("NA")
     A_node_data = list(node_data[node_data[0]==target][1])
+    A_node_data = sort_cossim_data(target)
+    A_node_data = A_node_data[1]
+    A_node_data = A_node_data.tolist()
     A_node_data.remove(target)
     if is_fill_graph:
-        B_node_data = list(node_data[node_data[0]==source][1])
+        B_node_data = sort_cossim_data(source)
+        B_node_data = B_node_data[1]
+        B_node_data = B_node_data.tolist()
         B_node_data.remove(source)
     else:
         B_node_data = [tri_dom,tri_cod] 
@@ -392,26 +402,14 @@ def over_less_tri_and_object_assoc_prob_th(r_function=pearsonr):
 if __name__ == "__main__":
     # 連想確率、TINTのシミュレーション結果(対象同士、三角構造同士)、人間の比喩解釈データをヒートマップで出力する
 
-    adj_matrix("butterfly","dancer")
-    object_TINT_edge_correspondence_heatmap("butterfly","dancer")
-    tri_TINT_edge_correspondence_heatmap("butterfly","dancer","dance","woman")
-    human_correspondence_heatmap("butterfly","dancer")
-
-    # TINTのシミュレーション結果(対象同士、三角構造同士)と実験で取得した人間の比喩の解釈のデータとの相関係数を計算する
-    r_function = spearmanr
-    seed = 6000
-    human_tri_data_correlation_to_csv("butterfly","dancer",seed,r_function=r_function)
-    human_object_data_correlation_to_csv(
-            "Date_all_seed_{}_butterfly_dancer_full_anti_1_iter_1000_correspondence.tsv".format(seed),
-            "butterfly","dancer", r_function=r_function)
-
-    
-    # 計算した相関係数が閾値(0.4)を超えているものを出力
-    object_correlation_analysis_over_th(r_function=r_function)
-    tri_correlation_analysis_over_th(r_function=r_function)
-
-    # 対象同士と人間、三角構造同士の人間で比較し、三角構造同士の方が連想確率が大きいもの、小さいものを出力
-    compare_tri_and_object_correlation(r_function=r_function)
-
-    # 相関が上回った(下回った)三角構造のうち、コスライス圏の射の連想確率が0.75以上のものを表示
-    over_less_tri_and_object_assoc_prob_th(r_function=r_function)    
+    A = "nation"
+    B = "government"
+    all_tri_structure_established_three_metaphor_sim(A,B)
+    adj_matrix(A,B)
+    B_node_data = sort_cossim_data(B)
+    B_node_data = B_node_data[1]
+    B_node_data = B_node_data.tolist()
+    B_node_data.remove(B)
+    for dom, cod in iter.permutations(B_node_data,2):
+        tri_TINT_edge_correspondence_heatmap(A,B,dom,cod)
+ 
