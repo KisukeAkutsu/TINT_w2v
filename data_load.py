@@ -13,7 +13,7 @@ def load_three_metaphor_data():
     return df
 """
 #w2vデータを連想確率として利用
-def load_three_metaphor_data(w2v_seed):
+def load_three_metaphor_data():
     DIR = "./../seed_data/"
-    df = pd.read_csv(DIR+"GoogleNews_cossim_data_seed_{}.tsv".format(w2v_seed), sep ="\t")
+    df = pd.read_csv(DIR+"./Google_butterfly_dancer_data/Google_butterfly_dancer_cossim_data.tsv",sep="\t")
     return df

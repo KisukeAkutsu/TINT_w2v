@@ -12,15 +12,15 @@ import math
 from scipy.stats import pearsonr,spearmanr
 
 # 連想強度をヒートマップで表示・出力する関数
-def adj_matrix(w2v_seed,source, target):
+def adj_matrix(source, target):
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data(w2v_seed)  
+    node_data = get_node_data()  
     
     assoc_net = make_assoc_net(source = "source", target = "target")
 
-    A_node_data = sort_cossim_cod_data(w2v_seed, source)
-    B_node_data = sort_cossim_cod_data(w2v_seed, target)
+    A_node_data = sort_cossim_cod_data(source)
+    B_node_data = sort_cossim_cod_data(target)
 
     matrix = list()
     for B_node in B_node_data:
@@ -39,14 +39,14 @@ def adj_matrix(w2v_seed,source, target):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".pdf",bbox_inches="tight")
+    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".png",bbox_inches="tight")
 
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
-def object_TINT_edge_correspondence_heatmap(w2v_seed, source, target):
+def object_TINT_edge_correspondence_heatmap(target, source):
     Corr_DIR = "./object_edge_correspondence/"
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data(w2v_seed)
+    node_data = get_node_data()
 
     weights = [0.05, 0.275, 0.5, 0.725, 0.95] # 0.05から0.225刻みの線形
 
@@ -55,13 +55,9 @@ def object_TINT_edge_correspondence_heatmap(w2v_seed, source, target):
     df_edge_corr = pd.read_csv(Corr_DIR+"Date_all_seed_6000_{}_{}_full_anti_1_iter_1000_correspondence.tsv".format(target,source),header=0,encoding="utf-8", sep="\t")
     df_edge_corr = df_edge_corr.fillna("NA")
 
-#    A_node_data = make_node_data(target, node_data)
-    A_node_data = sort_cossim_data(w2v_seed, target)
-    A_node_data = list(A_node_data[1])
+    A_node_data =list(node_data[node_data[0] == target][1])
     A_node_data.remove(target)
-#    B_node_data = make_node_data(source, node_data)
-    B_node_data = sort_cossim_data(w2v_seed, source)
-    B_node_data = list(B_node_data[1])
+    B_node_data = list(node_data[node_data[0] == source][1])
     B_node_data.remove(source)
     edge_corr_dict = {(B_node,A_node):0 for A_node in A_node_data for B_node in B_node_data}
 
@@ -86,15 +82,15 @@ def object_TINT_edge_correspondence_heatmap(w2v_seed, source, target):
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
     # plt.savefig("nt_weight_"+A_name+"_"+B_name+".pdf")
-    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".pdf")
+    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".png")
     # plt.savefig("word2vec_edge_corr_count_"+A_name+"_"+B_name+".png")
      
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
-def tri_TINT_edge_correspondence_heatmap(w2v_seed, source, target, tri_dom, tri_cod):
+def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     Corr_DIR = "./tri_edge_correspondence/"
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data(w2v_seed)
+    node_data = get_node_data()
 
     is_fill_graph = False
 
@@ -102,12 +98,12 @@ def tri_TINT_edge_correspondence_heatmap(w2v_seed, source, target, tri_dom, tri_
 
     df_edge_corr = df_edge_corr.fillna("NA")
 #    A_node_data = make_node_data(target, node_data)
-    A_node_data = sort_cossim_data(w2v_seed, target)
+    A_node_data = sort_cossim_data(target)
     A_node_data = list(A_node_data[1])
     A_node_data.remove(target)
     if is_fill_graph:
 #        B_node_data = make_node_data(source, node_data)
-        B_node_data = sort_cossim_data(w2v_seed, source)
+        B_node_data = sort_cossim_data(source)
         B_node_data = list(B_node_data[1])
         B_node_data.remove(source)
     else:
@@ -137,19 +133,18 @@ def tri_TINT_edge_correspondence_heatmap(w2v_seed, source, target, tri_dom, tri_
     plt.ylim(0,len(B_node_data))
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.pdf".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
+    plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.png".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
 
 
     
 if __name__ == "__main__":
     # 連想確率、TINTのシミュレーション結果(対象同士、三角構造同士)、人間の比喩解釈データをヒートマップで出力する
-    adj_matrix(w2v_seed,A,B)
-    object_TINT_edge_correspondence_heatmap(w2v_seed, A,B)
-    
-    node_data = get_node_data(w2v_seed)
-    B_node_data = sort_cossim_data(w2v_seed, source)
-    B_node_data = remove_identity_image(B_node_data)
-    B_init_nodes = list(B_node_data[1])
-    B_remain_image = [[dom,cod] for dom,cod in iter.permutations(B_init_nodes, 2)]
-    for tri_dom, tri_cod in B_remain_image:
-        tri_TINT_edge_correspondence_heatmap(w2v_seed, target, tri_dom, tri_cod)
+    A = "butterfly"
+    B = "dancer"
+    adj_matrix(A,B)
+    object_TINT_edge_correspondence_heatmap(A,B)
+    node_data = get_node_data()
+    B_node_data = list(node_data[node_data[0] == B][1])
+    B_node_data.remove(B)
+    for dom, cod in iter.permutations(B_node_data,2):
+        tri_TINT_edge_correspondence_heatmap(A,B,dom,cod)
