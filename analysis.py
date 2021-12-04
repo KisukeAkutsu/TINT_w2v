@@ -41,6 +41,36 @@ def adj_matrix(source, target):
     plt.xticks(rotation=25)
     plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".png",bbox_inches="tight")
 
+    #同一コスライス圏の対象間でのコサイン類似度をヒートマップ出力
+def adj_matrix_in_coslice(center):
+
+    #全てのイメージのデータを取得する
+    node_data = get_node_data()  
+    
+    assoc_net = make_assoc_net(source = "source", target = "target")
+
+    center_node_data = make_node_data(center,node_data)
+
+    matrix = list()
+    for node1 in center_node_data:
+        row = list()
+        for node2 in center_node_data:
+            if assoc_net.has_edge(node1,node2):
+                weight = assoc_net[node1][node2]["weight"]
+            else:
+                weight = 0.0
+            row.append(weight)
+        matrix.append(row)
+
+    df = pd.DataFrame(matrix,index=center_node_data,columns=center_node_data)
+    plt.clf()
+    sns.heatmap(df,vmin=0.0,vmax=1.0,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True)
+    plt.ylim(0,8)
+    plt.yticks(rotation=0)
+    plt.xticks(rotation=25)
+    plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".png",bbox_inches="tight")
+
+
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
 def object_TINT_edge_correspondence_heatmap(target, source):
     Corr_DIR = "./object_edge_correspondence/"
