@@ -1,2 +1,3 @@
 # TINT_w2v
 TINTでw2vデータを利用する
+ngepippi/TINT_simulationsのプログラムを書き換えて、論文の実験に沿った形に変更した。各実験は、ブランチごとに書いてある。
