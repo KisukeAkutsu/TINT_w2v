@@ -19,8 +19,8 @@ def adj_matrix(source, target):
     
     assoc_net = make_assoc_net(source = "source", target = "target")
 
-    A_node_data = sort_cossim_cod_data(source)
-    B_node_data = sort_cossim_cod_data(target)
+    A_node_data = make_node_data(A,node_data)
+    B_node_data = make_node_data(B,node_data)
 
     matrix = list()
     for B_node in B_node_data:
