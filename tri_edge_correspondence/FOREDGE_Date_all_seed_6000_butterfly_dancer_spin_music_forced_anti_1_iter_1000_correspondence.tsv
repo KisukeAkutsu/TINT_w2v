@@ -1,4 +1,12 @@
 B_dom	B_cod	A_dom	A_cod	count	probability
+dancer	spin	butterfly	dance	93	0.093
+dancer	spin	butterfly	fly	109	0.109
+dancer	spin	butterfly	sky	24	0.024
+dancer	spin	butterfly	flower	10	0.01
+dancer	spin	butterfly	feather	58	0.058
+dancer	spin	butterfly	beauty	6	0.006
+dancer	spin	butterfly	empty	12	0.012
+dancer	spin	NA	NA	688	0.688
 dancer	music	butterfly	flower	58	0.058
 dancer	music	butterfly	woman	12	0.012
 dancer	music	butterfly	fly	22	0.022
@@ -8,14 +16,6 @@ dancer	music	butterfly	sky	22	0.022
 dancer	music	butterfly	empty	5	0.005
 dancer	music	butterfly	feather	8	0.008
 dancer	music	NA	NA	688	0.688
-dancer	spin	butterfly	dance	93	0.093
-dancer	spin	butterfly	fly	109	0.109
-dancer	spin	butterfly	sky	24	0.024
-dancer	spin	butterfly	flower	10	0.01
-dancer	spin	butterfly	feather	58	0.058
-dancer	spin	butterfly	beauty	6	0.006
-dancer	spin	butterfly	empty	12	0.012
-dancer	spin	NA	NA	688	0.688
 spin	music	dance	flower	29	0.029
 spin	music	fly	woman	2	0.002
 spin	music	sky	fly	2	0.002
