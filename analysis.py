@@ -127,15 +127,9 @@ def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     df_edge_corr = pd.read_csv(Corr_DIR+"FOREDGE_Date_all_seed_6000_{}_{}_{}_{}_forced_anti_1_iter_1000_correspondence.tsv".format(target,source,tri_dom,tri_cod),header=0,encoding="utf-8", sep="\t")
 
     df_edge_corr = df_edge_corr.fillna("NA")
-#    A_node_data = make_node_data(target, node_data)
-    A_node_data = sort_cossim_data(target)
-    A_node_data = list(A_node_data[1])
-    A_node_data.remove(target)
+    A_node_data = make_node_data(target, node_data)
     if is_fill_graph:
-#        B_node_data = make_node_data(source, node_data)
-        B_node_data = sort_cossim_data(source)
-        B_node_data = list(B_node_data[1])
-        B_node_data.remove(source)
+        B_node_data = make_node_data(source, node_data)
     else:
         B_node_data = [tri_dom,tri_cod] 
 
