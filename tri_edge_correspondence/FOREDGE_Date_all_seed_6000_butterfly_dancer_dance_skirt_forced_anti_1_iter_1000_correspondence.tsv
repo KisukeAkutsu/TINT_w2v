@@ -36,6 +36,14 @@ dance	skirt	beauty	empty	3	0.003
 dance	skirt	feather	empty	1	0.001
 dance	skirt	sky	dance	2	0.002
 dance	skirt	NA	NA	194	0.194
+dancer	dance	butterfly	flower	141	0.141
+dancer	dance	butterfly	dance	402	0.402
+dancer	dance	butterfly	feather	67	0.067
+dancer	dance	butterfly	beauty	79	0.079
+dancer	dance	butterfly	fly	84	0.084
+dancer	dance	butterfly	sky	29	0.029
+dancer	dance	butterfly	woman	4	0.004
+dancer	dance	NA	NA	194	0.194
 dancer	skirt	butterfly	dance	97	0.097
 dancer	skirt	butterfly	beauty	91	0.091
 dancer	skirt	butterfly	flower	82	0.082
@@ -45,11 +53,3 @@ dancer	skirt	butterfly	fly	108	0.108
 dancer	skirt	butterfly	sky	96	0.096
 dancer	skirt	butterfly	empty	17	0.017
 dancer	skirt	NA	NA	194	0.194
-dancer	dance	butterfly	flower	141	0.141
-dancer	dance	butterfly	dance	402	0.402
-dancer	dance	butterfly	feather	67	0.067
-dancer	dance	butterfly	beauty	79	0.079
-dancer	dance	butterfly	fly	84	0.084
-dancer	dance	butterfly	sky	29	0.029
-dancer	dance	butterfly	woman	4	0.004
-dancer	dance	NA	NA	194	0.194
