@@ -213,10 +213,10 @@ def TINT_simu_est(g, A, B, est_A, est_B, config, recoder):
         show_graphs([est_A,est_B],["shell","shell"],True,False,["sim A\C result","sim B\C result"])
 
 #3つの比喩についてTINTのシミュレーションを実行する関数
-def established_three_metaphor_sim(w2v_seed, A, B):
+def established_three_metaphor_sim(A, B):
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data(w2v_seed)
+    node_data = get_node_data()
 
     A_targets ,B_targets, A_fname, B_fname = get_A_B_targets(A,B)
 
@@ -234,7 +234,7 @@ def established_three_metaphor_sim(w2v_seed, A, B):
     data_index = "all"                  # 4人のデータを使ったので、記録する際にどのデータを使ったのかのヘッダー(0~3,all)
 
     # 連想強度データから潜在圏を作る
-    assoc_net = make_assoc_net("source","target",w2v_seed)
+    assoc_net = make_assoc_net("source","target")
 
     #シード値でのループ
     for seed_inc in trange(0,1,desc="SEED_LOOP",leave=False):
@@ -248,9 +248,9 @@ def established_three_metaphor_sim(w2v_seed, A, B):
             config = Three_metaphor_TINT_config(sim_times,anti_time,anti_type,seed+seed_inc,A_nodes,nt_step,is_show,is_save,A_name_dict,B_name_dict,data_index)
 
             #コスライス圏Aの対象だけを確立させる（A->?）の射だけ
-            #ここでコサイン類似度でsortした中から上位8単語だけを抽出してコスライス圏を作る    
+            #ここでコサイン類似度でsortした中から上位8単語だけを抽出してコスライス圏を作る
             est_A = nx.DiGraph()
-            A_node_data = sort_cossim_data(w2v_seed, target_A)
+            A_node_data = sort_cossim_data(target_A)
             for cod in A_node_data[1]:
                 #恒等射は抜く
                 if target_A == cod or not assoc_net.has_edge(target_A,cod):
@@ -261,7 +261,7 @@ def established_three_metaphor_sim(w2v_seed, A, B):
 
             #コスライス圏Bの対象だけを確立させる(B->?)の射だけ
             est_B = nx.DiGraph()
-            B_node_data = sort_cossim_data(w2v_seed, target_B)
+            B_node_data = sort_cossim_data(target_B)
             for cod in B_node_data[1]:
                 if target_B == cod or not assoc_net.has_edge(target_B,cod):
                         continue
@@ -279,5 +279,6 @@ def established_three_metaphor_sim(w2v_seed, A, B):
 
 if __name__ == "__main__":
     #w2v_seed:使用するGoogleNewsデータを選択(0~5)
-    w2v_seed, A, B = select_seed_and_f()
-    established_three_metaphor_sim(w2v_seed, A, B)
+    A = "butterfly"
+    B = "dancer"
+    established_three_metaphor_sim(A,B)

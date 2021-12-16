@@ -21,10 +21,9 @@ def adj_matrix(target,source):
     assoc_net = make_assoc_net(source = "source", target = "target")
 
 
-    A_node_data = list(node_data[node_data[0]==target][1])
-    B_node_data = list(node_data[node_data[0]==source][1])
-    A_node_data.remove(target)
-    B_node_data.remove(source)
+
+    A_node_data = sort_cossim_cod_data(target)
+    B_node_data = sort_cossim_cod_data(source)
 
     matrix = list()
     for B_node in B_node_data:
@@ -42,8 +41,39 @@ def adj_matrix(target,source):
     sns.heatmap(df,vmin=0.0,vmax=1.0,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".pdf",bbox_inches="tight")
+    
+def adj_matrix_in_coslice(center):
+
+    #全てのイメージのデータを取得する
+    node_data = get_node_data()  
+    
+    assoc_net = make_assoc_net(source = "source", target = "target")
+
+    center_node_data = sort_cossim_cod_data(center)
+
+    matrix = list()
+    for node1 in center_node_data:
+        row = list()
+        for node2 in center_node_data:
+            if assoc_net.has_edge(node1,node2):
+                weight = assoc_net[node1][node2]["weight"]
+            else:
+                weight = 0.0
+            row.append(weight)
+        matrix.append(row)
+
+    df = pd.DataFrame(matrix,index=center_node_data,columns=center_node_data)
+    plt.clf()
+    sns.heatmap(df,vmin=0.0,vmax=1.0,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True)
+    plt.ylim(0,8)
+    plt.yticks(rotation=0)
+    plt.xticks(rotation=90)
+    plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".png",bbox_inches="tight")
+adj_matrix_in_coslice("butterfly")
+adj_matrix_in_coslice("dancer")
+
 
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
 #def object_TINT_edge_correspondence_heatmap(w2v_seed, source, target):
@@ -61,10 +91,8 @@ def object_TINT_edge_correspondence_heatmap(target,source):
 
     df_edge_corr = pd.read_csv(Corr_DIR+"Date_all_seed_6000_{}_{}_full_anti_1_iter_1000_correspondence.tsv".format(target,source),header=0,encoding="utf-8", sep="\t")
     df_edge_corr = df_edge_corr.fillna("NA")
-    A_node_data = list(node_data[node_data[0]==target][1])
-    B_node_data = list(node_data[node_data[0]==source][1])
-    A_node_data.remove(target)
-    B_node_data.remove(source)
+    A_node_data = sort_cossim_cod_data(target)
+    B_node_data = sort_cossim_cod_data(source)
     edge_corr_dict = {(B_node,A_node):0 for A_node in A_node_data for B_node in B_node_data}
 
     for B_node in B_node_data:
@@ -86,7 +114,7 @@ def object_TINT_edge_correspondence_heatmap(target,source):
     sns.heatmap(df,vmin=0.0,vmax=1000,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True, fmt="d")
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     # plt.savefig("nt_weight_"+A_name+"_"+B_name+".pdf")
     plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".pdf")
     # plt.savefig("word2vec_edge_corr_count_"+A_name+"_"+B_name+".png")
@@ -104,11 +132,10 @@ def tri_TINT_edge_correspondence_heatmap(target,source, tri_dom, tri_cod):
     df_edge_corr = pd.read_csv(Corr_DIR+"FOREDGE_Date_all_seed_6000_{}_{}_{}_{}_forced_anti_1_iter_1000_correspondence.tsv".format(target,source,tri_dom,tri_cod),header=0,encoding="utf-8", sep="\t")
 
     df_edge_corr = df_edge_corr.fillna("NA")
-    A_node_data = list(node_data[node_data[0]==target][1])
-    A_node_data.remove(target)
+    A_node_data = sort_cossim_cod_data(target)
+
     if is_fill_graph:
-        B_node_data = list(node_data[node_data[0]==source][1])
-        B_node_data.remove(source)
+        B_node_data = sort_cossim_cod_data(source)
     else:
         B_node_data = [tri_dom,tri_cod] 
 
@@ -393,25 +420,9 @@ if __name__ == "__main__":
     # 連想確率、TINTのシミュレーション結果(対象同士、三角構造同士)、人間の比喩解釈データをヒートマップで出力する
 
     adj_matrix("butterfly","dancer")
+    adj_matrix_in_coslice("butterfly")
+    adj_matrix_in_coslice("dancer")
     object_TINT_edge_correspondence_heatmap("butterfly","dancer")
-    tri_TINT_edge_correspondence_heatmap("butterfly","dancer","dance","woman")
-    human_correspondence_heatmap("butterfly","dancer")
-
-    # TINTのシミュレーション結果(対象同士、三角構造同士)と実験で取得した人間の比喩の解釈のデータとの相関係数を計算する
-    r_function = spearmanr
-    seed = 6000
-    human_tri_data_correlation_to_csv("butterfly","dancer",seed,r_function=r_function)
-    human_object_data_correlation_to_csv(
-            "Date_all_seed_{}_butterfly_dancer_full_anti_1_iter_1000_correspondence.tsv".format(seed),
-            "butterfly","dancer", r_function=r_function)
-
-    
-    # 計算した相関係数が閾値(0.4)を超えているものを出力
-    object_correlation_analysis_over_th(r_function=r_function)
-    tri_correlation_analysis_over_th(r_function=r_function)
-
-    # 対象同士と人間、三角構造同士の人間で比較し、三角構造同士の方が連想確率が大きいもの、小さいものを出力
-    compare_tri_and_object_correlation(r_function=r_function)
-
-    # 相関が上回った(下回った)三角構造のうち、コスライス圏の射の連想確率が0.75以上のものを表示
-    over_less_tri_and_object_assoc_prob_th(r_function=r_function)    
+    B_node_data = sort_cossim_cod_data("dancer")
+    for dom,cod in iter.permutations(B_node_data,2):
+        tri_TINT_edge_correspondence_heatmap("butterfly","dancer",dom,cod)
