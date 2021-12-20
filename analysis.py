@@ -15,8 +15,8 @@ from scipy.stats import pearsonr,spearmanr
 def adj_matrix(source, target):
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data()  
-    
+    node_data = get_node_data()
+
     assoc_net = make_assoc_net(source = "source", target = "target")
 
     A_node_data = make_node_data(A,node_data)
@@ -39,14 +39,14 @@ def adj_matrix(source, target):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".png",bbox_inches="tight")
+    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".pdf",bbox_inches="tight")
 
     #同一コスライス圏の対象間でのコサイン類似度をヒートマップ出力
 def adj_matrix_in_coslice(center):
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data()  
-    
+    node_data = get_node_data()
+
     assoc_net = make_assoc_net(source = "source", target = "target")
 
     center_node_data = make_node_data(center,node_data)
@@ -68,7 +68,7 @@ def adj_matrix_in_coslice(center):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".png",bbox_inches="tight")
+    plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".pdf",bbox_inches="tight")
 
 
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
@@ -104,7 +104,7 @@ def object_TINT_edge_correspondence_heatmap(target, source):
             row.append(edge_corr_dict[(B_node,A_node)])
         matrix.append(row)
 
-    
+
     df = pd.DataFrame(matrix,index=B_node_data,columns=A_node_data+["NA"])
     plt.clf()
     sns.heatmap(df,vmin=0.0,vmax=1000,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True, fmt="d")
@@ -112,9 +112,9 @@ def object_TINT_edge_correspondence_heatmap(target, source):
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
     # plt.savefig("nt_weight_"+A_name+"_"+B_name+".pdf")
-    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".png")
+    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".pdf")
     # plt.savefig("word2vec_edge_corr_count_"+A_name+"_"+B_name+".png")
-     
+
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
 def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     Corr_DIR = "./tri_edge_correspondence/"
@@ -131,10 +131,10 @@ def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     if is_fill_graph:
         B_node_data = make_node_data(source, node_data)
     else:
-        B_node_data = [tri_dom,tri_cod] 
+        B_node_data = [tri_dom,tri_cod]
 
     edge_corr_dict = {(B_node,A_node):0 for A_node in A_node_data for B_node in B_node_data}
-    for B_node in B_node_data:            
+    for B_node in B_node_data:
         corr_A_nodes = df_edge_corr[(df_edge_corr["B_cod"]==B_node) & (df_edge_corr["B_dom"] == source)]
         for corr_A in corr_A_nodes.itertuples():
             count = corr_A.count
@@ -157,15 +157,17 @@ def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     plt.ylim(0,len(B_node_data))
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.png".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
+    plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.pdf".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
 
 
-    
+
 if __name__ == "__main__":
     # 連想確率、TINTのシミュレーション結果(対象同士、三角構造同士)、人間の比喩解釈データをヒートマップで出力する
     A = "butterfly"
     B = "dancer"
     adj_matrix(A,B)
+    adj_matrix_in_coslice(A)
+    adj_matrix_in_coslice(B)
     object_TINT_edge_correspondence_heatmap(A,B)
     node_data = get_node_data()
     B_node_data = list(node_data[node_data[0] == B][1])
