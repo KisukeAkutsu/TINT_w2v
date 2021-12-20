@@ -41,7 +41,7 @@ def make_count_matrix(A_node_data, B_node_data, df_edge_corr):
 #    node_data = pd.read_csv("./../seed_data/GoogleNews_image_data_seed_{}.tsv".format(w2v_seed),header=None,encoding="utf-8", sep="\t")
 #    return  node_data
 def get_node_data():
-    node_data = pd.read_csv("./../seed_data/Google_butterfly_dancer_data/Google_butterfly_dancer_image_data.tsv",header=None,encoding="utf-8", sep="\t")
+    node_data = pd.read_csv("./../seed_data/similar_butterfly_dancer_3/butterfly_dancer_images.tsv",header=None,encoding="utf-8", sep="\t")
     return  node_data
 
 
