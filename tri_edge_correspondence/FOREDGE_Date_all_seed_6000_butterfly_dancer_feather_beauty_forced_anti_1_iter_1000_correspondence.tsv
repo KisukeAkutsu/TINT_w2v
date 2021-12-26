@@ -1,4 +1,10 @@
 B_dom	B_cod	A_dom	A_cod	count	probability
+dancer	beauty	butterfly	feather	29	0.029
+dancer	beauty	butterfly	beauty	899	0.899
+dancer	beauty	butterfly	sky	24	0.024
+dancer	beauty	butterfly	fly	29	0.029
+dancer	beauty	butterfly	skirt	19	0.019
+dancer	beauty	NA	NA	0	0.0
 dancer	feather	butterfly	spin	82	0.082
 dancer	feather	butterfly	sky	148	0.148
 dancer	feather	butterfly	feather	406	0.406
@@ -6,12 +12,6 @@ dancer	feather	butterfly	skirt	270	0.27
 dancer	feather	butterfly	dance	76	0.076
 dancer	feather	butterfly	beauty	18	0.018
 dancer	feather	NA	NA	0	0.0
-dancer	beauty	butterfly	feather	29	0.029
-dancer	beauty	butterfly	beauty	899	0.899
-dancer	beauty	butterfly	sky	24	0.024
-dancer	beauty	butterfly	fly	29	0.029
-dancer	beauty	butterfly	skirt	19	0.019
-dancer	beauty	NA	NA	0	0.0
 feather	beauty	spin	feather	14	0.014
 feather	beauty	spin	beauty	51	0.051
 feather	beauty	sky	beauty	148	0.148
