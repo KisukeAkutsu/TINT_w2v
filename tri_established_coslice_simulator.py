@@ -18,15 +18,15 @@ import sys
 import pprint
 
 #def make_all_triangle_edge_correspondence_csv(target,source,seed,w2v_seed):
-def make_all_triangle_edge_correspondence_csv(target,source,seed):   
+def make_all_triangle_edge_correspondence_csv(target,source,seed):
     Corr_DIR = "./tri_edge_correspondence/"
     node_data = get_node_data()
 
-    B_node_data = node_data[node_data[0]==source]
+    B_node_data = sort_cossim_data(source)
     B_init_nodes = list(B_node_data[1])
     B_init_nodes.remove(source)
     B_remain_image = [[dom,cod] for dom,cod in iter.permutations(B_init_nodes, 2)]
-    
+
     matrix = []
     tri_matrix = []
     for B_remain_tri in B_remain_image:
@@ -34,9 +34,8 @@ def make_all_triangle_edge_correspondence_csv(target,source,seed):
         df_edge_corr = pd.read_csv(Corr_DIR+"FOREDGE_Date_all_seed_6000_{}_{}_{}_{}_forced_anti_1_iter_1000_correspondence.tsv".format(target,source,tri_dom,tri_cod),header=0,encoding="utf-8", sep="\t")
 
         df_edge_corr = df_edge_corr.fillna("NA")                    #列にNAを追加
-        A_node_data = list(node_data[node_data[0]==target][1])    #被喩辞のイメージをとる
+        A_node_data = sort_cossim_cod_data(target)   #被喩辞のイメージをとる
         B_node_data = B_remain_tri                                  #被喩辞三角構造のイメージをとる
-        A_node_data.remove(target)    #被喩辞そのものを消す
 
 
         # 対象同士の対応づけについてカウントする
@@ -44,7 +43,7 @@ def make_all_triangle_edge_correspondence_csv(target,source,seed):
         for B_node in B_node_data:
             corr_A_nodes = df_edge_corr[(df_edge_corr["B_cod"]==B_node) & (df_edge_corr["B_dom"] == source)]
             for corr_A in corr_A_nodes.itertuples(): #一行ずつ取り出し
-                count = corr_A.count 
+                count = corr_A.count
                 edge_corr_dict[(B_node,corr_A.A_cod)] = count
 
         # コスライス圏の射の対応についてカウントする
@@ -97,14 +96,14 @@ def similar_structure(g, est_T, T, S, dom, cod, dom_nt_cand_list, cod_nt_cand_li
                 continue
             dom_edge_weight   = g[S][dom]["weight"]
             cod_edge_weight   = g[S][cod]["weight"]
-            cos_edge_weight   = g[dom][cod]["weight"]     
+            cos_edge_weight   = g[dom][cod]["weight"]
             F_dom_edge_weight = g[T][dom_nt]["weight"]
             F_cod_edge_weight = g[T][cod_nt]["weight"]
-            F_cos_edge_weight = g[dom_nt][cod_nt]["weight"]     
+            F_cos_edge_weight = g[dom_nt][cod_nt]["weight"]
 
             # ソースの三角構造とターゲットの三角構造の構成要素同士の重みの比較
             # 似た連想確率を持つ構造が一番移り先として適当なのではという予想
-            weight_dist = abs(dom_edge_weight-F_dom_edge_weight) + abs(cod_edge_weight-F_cod_edge_weight) + abs(cos_edge_weight-F_cos_edge_weight) 
+            weight_dist = abs(dom_edge_weight-F_dom_edge_weight) + abs(cod_edge_weight-F_cod_edge_weight) + abs(cos_edge_weight-F_cos_edge_weight)
             edge_correct_nt_pair.append((dom_nt,cod_nt,weight_dist))
     if len(edge_correct_nt_pair) == 0:
         return None
@@ -175,12 +174,12 @@ def categories_nt_search_for_edge(g, T, S, est_T, est_S, cutoff):
 
         # 候補の中から最も構造が類似しているものを自然変換の要素として選択
         # 選択する関数の中で、正しく関手になっていない候補は省かれる
-        nt_tuple = similar_structure(g,est_T,T,S,dom,cod,dom_nt_cand_list,cod_nt_cand_list) 
+        nt_tuple = similar_structure(g,est_T,T,S,dom,cod,dom_nt_cand_list,cod_nt_cand_list)
 
         # 候補が存在しない場合はそのコスライス圏の射に対応づくものはないとして飛ばす（記録しない）
         if nt_tuple == None:
             continue
-               
+
         dom_nt,cod_nt,weight = nt_tuple
 
         # BMFの記録
@@ -280,7 +279,7 @@ def TINT_simu_est(g, A, B, est_A, est_B, config, recoder):
         # show_metaphar(F_edge_dict)
         pass
 
-    # 関手Fでの対象と射の対応を辞書形で記憶する    
+    # 関手Fでの対象と射の対応を辞書形で記憶する
     recoder.recode_functor_F(A,B,1,F_edge_dict)
 
     # 以下表示、記録用
@@ -355,15 +354,15 @@ def tri_structure_established_three_metaphor_sim(A,B):
 
     A_name_dict = {key:value for key,value in zip(A_targets,A_fname)} #喩辞のファイル名（記録用）
     B_name_dict = {key:value for key,value in zip(B_targets,B_fname)} #被喩辞のファイル名（記録用）
-    sim_iter = 1000                    
-    sim_times = 1                 
-    anti_time = 1                  
-    nt_step = 1                    
-    is_show = False             
-    is_save = True               
-    anti_type = "forced"       
-    seed = 6000                  
-    data_index = "all"            
+    sim_iter = 1000
+    sim_times = 1
+    anti_time = 1
+    nt_step = 1
+    is_show = False
+    is_save = True
+    anti_type = "forced"
+    seed = 6000
+    data_index = "all"
 
     # 連想強度データから潜在圏を作る
 #    assoc_data = load_three_metaphor_data(w2v_seed)# データの読み込みindexは4人のうちどのデータを使うか(Noneは全員の平均)
@@ -386,7 +385,7 @@ def tri_structure_established_three_metaphor_sim(A,B):
 
                 #ターゲット側のコスライス圏の対象だけを確立させる（A->?）の射だけ
                 est_A = nx.DiGraph()
-                A_node_data = node_data[node_data[0]==target_A]
+                A_node_data = sort_cossim_data(target_A)
 
                 # コスライス圏の対象を励起
                 for cod in A_node_data[1]:
@@ -403,7 +402,7 @@ def tri_structure_established_three_metaphor_sim(A,B):
 
                 #ソース側のコスライス圏で強い三角構造だけを励起させる
                 est_B = nx.DiGraph()
-                B_node_data = node_data[node_data[0]==target_B]
+                B_node_data = sort_cossim_data(target_B)
                 # 三角構造の射それぞれの連想確率の平均をとって最大のものを励起させる
                 triangle_structure = []
                 for dom in B_node_data[1]:
@@ -442,15 +441,15 @@ def all_tri_structure_established_three_metaphor_sim(A,B):
 
     A_name_dict = {key:value for key,value in zip(A_targets,A_fname)} #喩辞のファイル名（記録用）
     B_name_dict = {key:value for key,value in zip(B_targets,B_fname)} #被喩辞のファイル名（記録用）
-    sim_iter = 1000                   
-    sim_times = 1                  
-    anti_time = 1                   
-    nt_step = 1                     
-    is_show = False              
-    is_save = False               
-    anti_type = "forced"        
-    seed = 6000                   
-    data_index = "all"             
+    sim_iter = 1000
+    sim_times = 1
+    anti_time = 1
+    nt_step = 1
+    is_show = False
+    is_save = False
+    anti_type = "forced"
+    seed = 6000
+    data_index = "all"
 
 
     # 連想強度データから潜在圏を作る
@@ -464,7 +463,7 @@ def all_tri_structure_established_three_metaphor_sim(A,B):
 
         # 比喩についてのループ
         for target_A,target_B in zip(tqdm(A_targets,desc="HIYU LOOP",leave=False),B_targets):
-            B_node_data = node_data[node_data[0]==target_B]
+            B_node_data = sort_cossim_data(target_B)
             #喩辞側の全ての三角構造についてシミュレーションを行う
             B_init_nodes = list(B_node_data[1])
             B_init_nodes.remove(target_B)
@@ -478,7 +477,7 @@ def all_tri_structure_established_three_metaphor_sim(A,B):
                 #ターゲット側のコスライス圏の作成
                 A_nodes = None      #neighboring ruleの制限をかけるためのもの
                 est_A = nx.DiGraph()
-                A_node_data = node_data[node_data[0]==target_A]
+                A_node_data = sort_cossim_data(target_A)
                 # コスライス圏の対象を励起
                 for cod in A_node_data[1]:
                     if cod == target_A:
