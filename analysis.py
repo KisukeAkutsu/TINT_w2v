@@ -13,11 +13,11 @@ from scipy.stats import pearsonr,spearmanr
 
 # 連想強度をヒートマップで表示・出力する関数
 #def adj_matrix(w2v_seed,source, target):
-def adj_matrix(target,source):    
+def adj_matrix(target,source):
 
     #全てのイメージのデータを取得する
     node_data = get_node_data()
-    
+
     assoc_net = make_assoc_net(source = "source", target = "target")
 
 
@@ -42,13 +42,13 @@ def adj_matrix(target,source):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=90)
-    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".pdf",bbox_inches="tight")
-    
+    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".png",bbox_inches="tight")
+
 def adj_matrix_in_coslice(center):
 
     #全てのイメージのデータを取得する
-    node_data = get_node_data()  
-    
+    node_data = get_node_data()
+
     assoc_net = make_assoc_net(source = "source", target = "target")
 
     center_node_data = sort_cossim_cod_data(center)
@@ -78,7 +78,7 @@ adj_matrix_in_coslice("dancer")
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
 #def object_TINT_edge_correspondence_heatmap(w2v_seed, source, target):
 def object_TINT_edge_correspondence_heatmap(target,source):
-    
+
     Corr_DIR = "./object_edge_correspondence/"
 
 
@@ -108,17 +108,17 @@ def object_TINT_edge_correspondence_heatmap(target,source):
             row.append(edge_corr_dict[(B_node,A_node)])
         matrix.append(row)
 
-    
+
     df = pd.DataFrame(matrix,index=B_node_data,columns=A_node_data+["NA"])
     plt.clf()
     sns.heatmap(df,vmin=0.0,vmax=1000,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True, fmt="d")
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=90)
-    # plt.savefig("nt_weight_"+A_name+"_"+B_name+".pdf")
-    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".pdf")
+    # plt.savefig("nt_weight_"+A_name+"_"+B_name+".png")
+    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".png")
     # plt.savefig("word2vec_edge_corr_count_"+A_name+"_"+B_name+".png")
-     
+
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
 #def tri_TINT_edge_correspondence_heatmap(w2v_seed, source, target, tri_dom, tri_cod):
 def tri_TINT_edge_correspondence_heatmap(target,source, tri_dom, tri_cod):
@@ -137,11 +137,11 @@ def tri_TINT_edge_correspondence_heatmap(target,source, tri_dom, tri_cod):
     if is_fill_graph:
         B_node_data = sort_cossim_cod_data(source)
     else:
-        B_node_data = [tri_dom,tri_cod] 
+        B_node_data = [tri_dom,tri_cod]
 
 
     edge_corr_dict = {(B_node,A_node):0 for A_node in A_node_data for B_node in B_node_data}
-    for B_node in B_node_data:            
+    for B_node in B_node_data:
         corr_A_nodes = df_edge_corr[(df_edge_corr["B_cod"]==B_node) & (df_edge_corr["B_dom"] == source)]
         for corr_A in corr_A_nodes.itertuples():
             count = corr_A.count
@@ -176,7 +176,7 @@ def human_correspondence_heatmap(target,source):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=90)
-    plt.savefig("./heatmap/human_correspondence_{}_{}.pdf".format(target,source))
+    plt.savefig("./heatmap/human_correspondence_{}_{}.png".format(target,source))
 
 
 # TINTの対象同士のシミュレーション結果の対応づけを行列形式に整形する
@@ -226,7 +226,7 @@ def human_object_data_correlation_to_csv(TINT_corr_fname,target,source,r_functio
         corref, p_value = r_function(list(human_row),list(TINT_row))#ピアソンの相関係数とp値
         mtx.append((S_image,corref,p_value))
     df = pd.DataFrame(mtx,columns=("S_image", "correlation","p_value"))
-    df.to_csv(save_dir+"human_object_TINT_{}_correlation.tsv".format(r_function.__name__),sep="\t")  
+    df.to_csv(save_dir+"human_object_TINT_{}_correlation.tsv".format(r_function.__name__),sep="\t")
 
 # 全ての三角構造同士のシミュレーションの対応づけと、人間の対応づけの相関係数を計算し、ファイルに吐き出す
 def human_tri_data_correlation_to_csv(target,source,seed,r_function=pearsonr):
@@ -335,7 +335,7 @@ def object_correlation_analysis_over_th(r_function=pearsonr, corref_th = 0.4):
     # 人間の対応と、対象同士のTINTの対応づけとの相関データを取り出す
     object_corref = pd.read_csv("./corref/human_object_TINT_{}_correlation.tsv".format(r_function.__name__),header=0,index_col=0,sep="\t")
     object_corref_over_th = object_corref[object_corref["correlation"] >= corref_th]
- 
+
     print("相関がどちらも{}以上の三角構造".format(corref_th))
     print("image \t r \t p_value")
     for idx,row in object_corref_over_th.iterrows():
@@ -379,7 +379,7 @@ def compare_tri_and_object_correlation(r_function=pearsonr):
 def over_less_tri_and_object_assoc_prob_th(r_function=pearsonr):
     object_corref = pd.read_csv("./corref/human_object_TINT_{}_correlation.tsv".format(r_function.__name__),header=0,index_col=1,sep="\t")
     tri_corref = pd.read_csv("./corref/human_tri_data_{}_correlation.tsv".format(r_function.__name__),header=0,index_col=0,sep="\t")
-   
+
 
     assoc_data = load_three_metaphor_data()
     assoc_net = nx.from_pandas_edgelist(df = assoc_data, source='source', target='target',edge_attr=["weight"], create_using=nx.DiGraph)
@@ -415,7 +415,7 @@ def over_less_tri_and_object_assoc_prob_th(r_function=pearsonr):
     print("(tri_dom,tri_cod) \t dom_r \t cod_r \t dom_p \t cod_p")
     for dom,cod,prob in is_less_corref_matrix:
         print("({:4} , {:4}) \t {} ".format(dom,cod,prob))
-    
+
 if __name__ == "__main__":
     # 連想確率、TINTのシミュレーション結果(対象同士、三角構造同士)、人間の比喩解釈データをヒートマップで出力する
 
