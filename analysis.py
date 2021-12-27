@@ -39,7 +39,7 @@ def adj_matrix(source, target):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".pdf",bbox_inches="tight")
+    plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".png",bbox_inches="tight")
 
     #同一コスライス圏の対象間でのコサイン類似度をヒートマップ出力
 def adj_matrix_in_coslice(center):
@@ -68,7 +68,7 @@ def adj_matrix_in_coslice(center):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".pdf",bbox_inches="tight")
+    plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".png",bbox_inches="tight")
 
 
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
@@ -111,8 +111,8 @@ def object_TINT_edge_correspondence_heatmap(target, source):
     plt.ylim(0,8)
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    # plt.savefig("nt_weight_"+A_name+"_"+B_name+".pdf")
-    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".pdf")
+    plt.savefig("nt_weight_"+A_name+"_"+B_name+".png")
+    plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".png")
     # plt.savefig("word2vec_edge_corr_count_"+A_name+"_"+B_name+".png")
 
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
@@ -157,7 +157,7 @@ def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     plt.ylim(0,len(B_node_data))
     plt.yticks(rotation=0)
     plt.xticks(rotation=25)
-    plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.pdf".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
+    plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.png".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
 
 
 
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     adj_matrix(A,B)
     adj_matrix_in_coslice(A)
     adj_matrix_in_coslice(B)
-    object_TINT_edge_correspondence_heatmap(A,B)
+    #object_TINT_edge_correspondence_heatmap(A,B)
     node_data = get_node_data()
     B_node_data = list(node_data[node_data[0] == B][1])
     B_node_data.remove(B)
