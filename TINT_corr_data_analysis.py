@@ -77,7 +77,7 @@ def make_human_corr_heatmap(data,user_dict,front_dict,main_dict,back_dict):
         center=3.0,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     # plt.xlabel("被喩辞の意味を構成する対象")
     # plt.ylabel("喩辞の意味を構成する対象")
     # plt.savefig("butterfly_dancer_human_correspondence.pdf",bbox_inches="tight")
@@ -88,7 +88,7 @@ def make_human_corr_heatmap(data,user_dict,front_dict,main_dict,back_dict):
         xticklabels=True,yticklabels=True,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     # plt.savefig("butterfly_dancer_human_std.pdf")
 
 
@@ -103,7 +103,7 @@ def show_histgram(data,val_dict):
         for col,T_image in enumerate(T_images):
             counts = rep_value_corr_data[(S_image,T_image)].value_counts()
             data_hist = [counts[i] if i in list(counts.index) else 0 for i in range(1,6)]
-            
+
             width = 0.8
             x = [i for i in range(1,6)]
             ax = fig.add_subplot(3, 3, col+1,title="{} -> {}".format(S_image,T_image) ,
@@ -138,7 +138,7 @@ def make_human_TINT_each_images_correlation_df(human_data,TINT_data,corr_fname="
         corref_list = []
         p_value_list = []
         for _,human_row in human_data.iterrows():
-            # corref = np.corrcoef(list(human_row),list(TINT_row))[0][1]  
+            # corref = np.corrcoef(list(human_row),list(TINT_row))[0][1]
             corref, p_value = r_function(list(human_row),list(TINT_row))#ピアソンの相関係数とp値
             corref_list.append(corref)
             p_value_list.append(p_value)
@@ -178,8 +178,8 @@ if __name__ == "__main__":
     # インターンで使ったやつ
     val_dict = {"まったく同意しない":1,"あまり同意しない":2,"どちらとも言えない":3,"多少同意する":4,"強く同意する":5}
     # show_histgram(data,val_dict)
-    
-    # TODO:TINTの対応との差分をとったヒートマップを作る 
+
+    # TODO:TINTの対応との差分をとったヒートマップを作る
     TINT_corr_data = load_corr_data("Date_all_seed_4000_蝶_踊り子_full_anti_1_iter_1000_correspondence.csv","蝶","踊り子")
 
     main_corr_data = data[list(main_corr_name_dict.values())]
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     print(human_corr_data)
     print(TINT_corr_data)
 
-    exit()  
+    exit()
 
     r_function = pearsonr
     corr_fname ="human_target_data_{}_correlation_all_images.csv".format(r_function.__name__)
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     for idx,row in TINT_corr_data.iterrows():
         conv_TINT_corr_data.append([val / 250 + 1 for val in row])
 
-    conv_TINT_corr_df = pd.DataFrame(conv_TINT_corr_data,index = S_images,columns=T_images) 
+    conv_TINT_corr_df = pd.DataFrame(conv_TINT_corr_data,index = S_images,columns=T_images)
 
     headers = ["","all"]
     tmps = ["0.2","0.5","1.0","2.0","5.0"]
@@ -243,7 +243,7 @@ if __name__ == "__main__":
 
     human_data_correlation_non_corr(human_corr_data)
     exit()
-    
+
     human_TINT_correlation(human_corr_data,conv_TINT_corr_df)
 
 
@@ -254,9 +254,9 @@ if __name__ == "__main__":
         center=3.0,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("conversion_butterfly_dancer_TINT_correspondence.png")
-    
+
     plt.figure()
     TINT_human_dist_df = human_corr_data - conv_TINT_corr_df
     sns.heatmap(TINT_human_dist_df,
@@ -265,6 +265,5 @@ if __name__ == "__main__":
         center=0,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("human_TINT_distance_correspondence.png")
-

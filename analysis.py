@@ -38,7 +38,7 @@ def adj_matrix(source, target):
     sns.heatmap(df,vmin=0.0,vmax=1.0,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("./heatmap/nt_weight_"+target+"_"+source+".png",bbox_inches="tight")
 
     #同一コスライス圏の対象間でのコサイン類似度をヒートマップ出力
@@ -67,7 +67,7 @@ def adj_matrix_in_coslice(center):
     sns.heatmap(df,vmin=0.0,vmax=1.0,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True)
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("./heatmap/nt_weight_in_coslice_"+center+".png",bbox_inches="tight")
 
 
@@ -110,10 +110,10 @@ def object_TINT_edge_correspondence_heatmap(target, source):
     sns.heatmap(df,vmin=0.0,vmax=1000,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True, fmt="d")
     plt.ylim(0,8)
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("nt_weight_"+A_name+"_"+B_name+".png")
     plt.savefig("./heatmap/object_edge_correspondence_count_"+target+"_"+source+".png")
-    # plt.savefig("word2vec_edge_corr_count_"+A_name+"_"+B_name+".png")
+
 
 # 記録した関手Fからどの対象がどの対象と対応づきやすいかをヒートマップで表示・出力する
 def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
@@ -156,7 +156,7 @@ def tri_TINT_edge_correspondence_heatmap(target, source,tri_dom, tri_cod):
     sns.heatmap(df,vmin=0.0,vmax=1000,cmap="Blues",linewidths=1,cbar=True,xticklabels=True,yticklabels=True,annot=True,fmt="d",square=True)
     plt.ylim(0,len(B_node_data))
     plt.yticks(rotation=0)
-    plt.xticks(rotation=25)
+    plt.xticks(rotation=90)
     plt.savefig("./heatmap/tri_edge_correspondence_count_{}_{}_{}_{}.png".format(target,source,tri_dom,tri_cod),bbox_inches="tight")
 
 
